@@ -13,6 +13,8 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
                       name: 'oauth2_basic',
                       setup: lambda {|env|
                         opts = env['omniauth.strategy'].options
+                        opts[:nonce] = '666'
+                        opts[:scope] = 'openid%20profile%20email%20address%20phone%20preferred_username%20email%20address%20phone%20preferred_username'
                         opts[:client_id] = SiteSetting.oauth2_client_id
                         opts[:client_secret] = SiteSetting.oauth2_client_secret
                         opts[:provider_ignores_state] = true
