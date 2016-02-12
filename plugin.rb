@@ -10,6 +10,10 @@ enabled_site_setting :oauth2_enabled
 class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
   def register_middleware(omniauth)
     omniauth.provider :oauth2,
+                      authorize_params: {
+                        scope: 'openid profile email preferred_username given_name family_name',
+                        nonce: SecureRandom.hex(15)
+                      },
                       name: 'oauth2_basic',
                       setup: lambda {|env|
                         opts = env['omniauth.strategy'].options
