@@ -83,7 +83,8 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
     elsif SiteSetting.oauth2_email_verified?
       result.user = User.where(email: Email.downcase(result.email)).first
     end
-    result.user.custom_fields["france_connect"] = true
+    result.user.custom_fields["france_connect"] = "yes"
+    result.user.save
 
     result.extra_data = { oauth2_basic_user_id: user_details[:user_id] }
     result
