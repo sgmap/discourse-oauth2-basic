@@ -7,6 +7,12 @@ require_dependency 'auth/oauth2_authenticator.rb'
 
 enabled_site_setting :oauth2_enabled
 
+DiscoursePluginRegistry.serialized_current_user_fields << "fc_user"
+
+after_initialize do
+  User.register_custom_field_type('fc_user', :boolean)
+end
+
 class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
   def register_middleware(omniauth)
     omniauth.provider :oauth2,
@@ -82,6 +88,10 @@ class OAuth2BasicAuthenticator < ::Auth::OAuth2Authenticator
       result.user = User.where(id: current_info[:user_id]).first
     elsif SiteSetting.oauth2_email_verified?
       result.user = User.where(email: Email.downcase(result.email)).first
+    end
+    if result.user
+      result.user.custom_fields["fc_user"] = true
+      result.user.save
     end
 
     result.extra_data = { oauth2_basic_user_id: user_details[:user_id] }
